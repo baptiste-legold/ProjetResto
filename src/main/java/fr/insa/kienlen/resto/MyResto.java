@@ -19,7 +19,6 @@ along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
 package fr.insa.kienlen.resto;
 
 import fr.insa.beuvron.cours.multiTache.projets.restoV2.fourni.SimuResto;
-import testsEmployesRessources.Ressources;
 
 /**
  *

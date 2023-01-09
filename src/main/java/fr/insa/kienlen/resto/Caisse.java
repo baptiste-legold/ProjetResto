@@ -1,4 +1,4 @@
-package fr.insa.beuvron.cours.multiTache.projets.restoV2;
+package fr.insa.kienlen.resto;
 
 public class Caisse {
     

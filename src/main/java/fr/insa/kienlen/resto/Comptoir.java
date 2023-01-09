@@ -1,4 +1,4 @@
-package fr.insa.beuvron.cours.multiTache.projets.restoV2;
+package fr.insa.kienlen.resto;
 
 public class Comptoir {
 
@@ -20,15 +20,14 @@ public class Comptoir {
 
     public synchronized int reserveCaisse(){
         int i = 0;
-        while(!caissesDispos[i] && i < lesCaisses.length){
-            if(i < lesCaisses.length - 1){
-                i++;
-            }
-            else{
+        while(!caissesDispos[i]){
+            i++;
+            if(i == lesCaisses.length){
                 break;
             }
         }
         if(i < lesCaisses.length){
+            caissesDispos[i] = false;
             return lesCaisses[i].getId();
         }
         else{
@@ -37,6 +36,28 @@ public class Comptoir {
     }
 
     public synchronized void libereCaisse(Caisse caisseALiberer){
-        this.caissesDispos[caisseALiberer.getId() - 1] = true;
+        this.caissesDispos[caisseALiberer.getId()] = true;
     }    
+    
+    public static void main(String[] args) {
+        Caisse[] ca = new Caisse[3];
+        for(int i=0; i<3; i++){
+            ca[i] = new Caisse(i);
+        }
+        Comptoir co = new Comptoir(ca);
+        int demande1 = co.reserveCaisse();
+        System.out.println(demande1);
+        int demande2 = co.reserveCaisse();
+        System.out.println(demande2);
+        co.libereCaisse(ca[0]);
+        int demande3 = co.reserveCaisse();
+        System.out.println(demande3);
+        int demande4 = co.reserveCaisse();
+        System.out.println(demande4);
+        co.libereCaisse(ca[1]);
+        int demande5 = co.reserveCaisse();
+        System.out.println(demande5);
+        int demande6 = co.reserveCaisse();
+        System.out.println(demande6);
+    }
 }

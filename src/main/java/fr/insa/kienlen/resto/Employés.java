@@ -16,13 +16,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
  */
-package testsEmployesRessources;
+package fr.insa.kienlen.resto;
 
 // import des différentes classes 
 import fr.insa.beuvron.cours.multiTache.projets.restoV2.fourni.CommandeClient;
-    import fr.insa.beuvron.cours.multiTache.projets.restoV2.fourni.SimulateurGlobal;
+import fr.insa.beuvron.cours.multiTache.projets.restoV2.fourni.SimulateurGlobal;
 import fr.insa.beuvron.cours.multiTache.projets.restoV2.parametres.ParametresSimulation;
-import fr.insa.kienlen.resto.MyResto;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,10 +30,10 @@ import java.util.logging.Logger;
  *
  * @author camil
  */
-public class Employés extends Thread{
+public class Employes extends Thread{
     // attribus d'un employé: chaque employé a un nom
     private int identifiant;
-    private String prénom;
+    private String prenom;
     private String nom;
     
     private SimulateurGlobal simu;
@@ -47,16 +46,17 @@ public class Employés extends Thread{
     private Ressources commun;
     
     // constructeur: donne les caractéristiques de l'objet 
-    public Employés (int identifiant, String prénom, String nom,SimulateurGlobal simu) {
+    public Employes (int identifiant, String prenom, String nom,SimulateurGlobal simu) {
         this.identifiant = identifiant;
-        this.prénom = prénom;
+        this.prenom = prenom;
         this.nom = nom;
         this.simu = simu;
     }
 
     // fonction d'affichage de l'objet Employé
+    @Override
     public String toString() {
-        return "Employé n°" + this.identifiant + ":monsieur/madame"+this.nom+" "+this.prénom;
+        return "Employé n°" + this.identifiant + ":monsieur/madame"+this.nom+" "+this.prenom;
     }
 
     // réécriture de la fonction run qui spécifie ce que fait le thread lorsqu'il est lancé:
@@ -93,7 +93,7 @@ public class Employés extends Thread{
                                 resto.getLeStock().reserveStock(); // on reserve le stock
                             }
                         }
-                        resto.getLeStock().setStocksActuels(curStock-nombreElements,i);
+                        resto.getLeStock().setStock(curStock-nombreElements,i);
                         resto.getLeStock().libereStock();
                     }
                 }

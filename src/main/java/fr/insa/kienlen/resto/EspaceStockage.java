@@ -1,8 +1,12 @@
-package fr.insa.beuvron.cours.multiTache.projets.restoV2;
+package fr.insa.kienlen.resto;
+
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class EspaceStockage
 {
     private int[] stocksActuels;
+    private Lock lock = new ReentrantLock();
 
     public EspaceStockage(int[] stocksActuels) {
         this.stocksActuels = stocksActuels;
@@ -17,6 +21,7 @@ public class EspaceStockage
     }
 
     public synchronized int reserveStock() {
+        lock.lock();
         try {
             this.wait();
             return 1;
@@ -26,8 +31,15 @@ public class EspaceStockage
         }
     }
     
-    public synchronized void libereStock() {
-        this.notifyAll();
+    public int getStock(int valTypePlat){
+        return this.stocksActuels[valTypePlat];
     }
-
+    
+    public void setStock(int quantite, int valTypePlat){
+        this.stocksActuels[valTypePlat] = quantite;
+    }
+    
+    public synchronized void libereStock() {
+        lock.unlock();
+    }
 }
