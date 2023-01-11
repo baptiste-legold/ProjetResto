@@ -22,6 +22,8 @@ package fr.insa.kienlen.resto;
 import fr.insa.beuvron.cours.multiTache.projets.restoV2.fourni.CommandeClient;
 import fr.insa.beuvron.cours.multiTache.projets.restoV2.fourni.SimulateurGlobal;
 import fr.insa.beuvron.cours.multiTache.projets.restoV2.parametres.ParametresSimulation;
+import fr.insa.beuvron.cours.multiTache.projets.restoV2.parametres.TypePlat;
+
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,10 +36,8 @@ public class Employes extends Thread{
     // attribus d'un employé: chaque employé a un nom
     private int identifiant;
     private String prenom;
-    private String nom;
-    
-    private SimulateurGlobal simu;
-    
+    private String nom;    
+    private boolean occupe; 
     
     // pour les demandes futures d'actions 
     private boolean consomme; 
@@ -46,17 +46,17 @@ public class Employes extends Thread{
     private Ressources commun;
     
     // constructeur: donne les caractéristiques de l'objet 
-    public Employes (int identifiant, String prenom, String nom,SimulateurGlobal simu) {
+    public Employes (int identifiant, String prenom, String nom) {
         this.identifiant = identifiant;
         this.prenom = prenom;
         this.nom = nom;
-        this.simu = simu;
+        this.occupe = false;
     }
 
     // fonction d'affichage de l'objet Employé
     @Override
     public String toString() {
-        return "Employé n°" + this.identifiant + ":monsieur/madame"+this.nom+" "+this.prenom;
+        return "Employé n°" + this.identifiant + " : " + this.nom + " " + this.prenom;
     }
 
     // réécriture de la fonction run qui spécifie ce que fait le thread lorsqu'il est lancé:

@@ -19,6 +19,8 @@ along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
 package fr.insa.kienlen.resto;
 
 import fr.insa.beuvron.cours.multiTache.projets.restoV2.fourni.SimuResto;
+import fr.insa.beuvron.cours.multiTache.projets.restoV2.fourni.SimulateurGlobal;
+import fr.insa.beuvron.cours.multiTache.projets.restoV2.parametres.Restaurant;
 
 /**
  *
@@ -28,19 +30,14 @@ public class MyResto extends SimuResto {
     
     private Comptoir leComptoir;
     private EspaceStockage leStock;
-    private Ressources lesRessources; 
+    private Ressources[] lesRessources; 
 
-    public Ressources getLesRessources() {
+    public Ressources[] getLesRessources() {
         return lesRessources;
     }
 
     public EspaceStockage getLeStock() {
         return leStock;
-    }
-
-    @Override
-    public void start() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     /**
@@ -49,7 +46,11 @@ public class MyResto extends SimuResto {
     public Comptoir getLeComptoir() {
         return leComptoir;
     }
-    
-    
-    
+
+    @Override
+    public void start() {
+        SimulateurGlobal simu = this.getSimu();
+        Restaurant resto = new Restaurant
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }    
 }

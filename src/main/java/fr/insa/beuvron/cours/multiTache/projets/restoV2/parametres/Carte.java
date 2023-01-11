@@ -34,7 +34,7 @@ public class Carte  {
     public String toString() {
         StringBuilder res = new StringBuilder();
         res.append("Carte{\n");
-        for(var ts : this.lesPlats) {
+        for(TypePlat ts : this.lesPlats) {
             res.append(" | ");
             res.append(ts);
             res.append("\n");
@@ -89,7 +89,6 @@ public class Carte  {
     
     public static void main(String[] args) {
         System.out.println(carteTest());
-        System.out.println("Ok");
     }
     
  

@@ -1,15 +1,25 @@
 package fr.insa.kienlen.resto;
 
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
 public class EspaceStockage
 {
+    private Ressources[][] ressourcesDispos;
     private int[] stocksActuels;
-    private Lock lock = new ReentrantLock();
+    private boolean isRetraitLibre;
+    private boolean isDepotLibre;
+    
+    public EspaceStockage(Ressources[][] ressourcesInitiales, int[] stocksInitiaux) {
+        this.ressourcesDispos = ressourcesInitiales;    
+        this.stocksActuels = stocksInitiaux;
+        this.isRetraitLibre = true;
+        this.isDepotLibre = true;
+    }
 
-    public EspaceStockage(int[] stocksActuels) {
-        this.stocksActuels = stocksActuels;
+    public Ressources[][] getRessourcesDispos() {
+        return ressourcesDispos;
+    }
+
+    public void setRessourcesDispos(Ressources[][] ressourcesDispos) {
+        this.ressourcesDispos = ressourcesDispos;
     }
 
     public int[] getStocksActuels() {
@@ -20,26 +30,41 @@ public class EspaceStockage
         this.stocksActuels = stocksActuels;
     }
 
-    public synchronized int reserveStock() {
-        lock.lock();
-        try {
-            this.wait();
-            return 1;
-        } catch (InterruptedException e) {
-            System.out.println("Espace de stockage non disponible");
-            return -1;
-        }
-    }
-    
-    public int getStock(int valTypePlat){
+    public int getSpecStock(int valTypePlat){
         return this.stocksActuels[valTypePlat];
     }
     
-    public void setStock(int quantite, int valTypePlat){
+    public void setSpecStock(int quantite, int valTypePlat){
         this.stocksActuels[valTypePlat] = quantite;
     }
-    
-    public synchronized void libereStock() {
-        lock.unlock();
+
+    /* Gestion de la zone de dépôt de l'espace de stockage */
+    public synchronized boolean reserveDepot(){
+        if(this.isDepotLibre){
+            this.isDepotLibre = false;
+            return true;
+        }
+        else{
+            return false;
+        }
     }
+
+    public void libereDepot(){
+        this.isDepotLibre = true;
+    }  
+    
+    /* Gestion de la zone de retrait de l'espace de stockage */
+    public synchronized boolean reserveRetrait(){
+        if(this.isRetraitLibre){
+            this.isRetraitLibre = false;
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public void libereRetrait(){
+        this.isRetraitLibre = true;
+    }  
 }

@@ -17,59 +17,28 @@ You should have received a copy of the GNU General Public License
 along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.insa.kienlen.resto;
+import fr.insa.beuvron.cours.multiTache.projets.restoV2.parametres.TypePlat;
 
-/**
- *
- * @author camil
- */
 public class Ressources {
-    private String nom;
-    private int dispo;
-    private static long tempsProduction;
-    private static long tempsConsommation;
-    private static long FinDeProcuction; 
-    public static int MAXRessource = 10;
+
+    private TypePlat plat;
+    private long debutPreparation; 
+    private long finConso;
     
-public Ressources(int val, String nom, long tempsProduction,long tempsConsommation) {
-        this.dispo = val;
-        this.nom=nom; 
-        this.tempsProduction=tempsProduction; 
-        this.tempsConsommation=tempsConsommation; 
-        this.FinDeProcuction=FinDeProcuction; 
+    public Ressources(TypePlat plat, long debutPreparation) {
+        this.plat = plat;
+        this.debutPreparation = debutPreparation;
     }
+
+    public TypePlat getPlat() {
+        return plat;
+    }
+
+    public long getDebutPreparation() {
+        return debutPreparation;
+    }
+
+    public long getFinConso() {
+        return finConso;
+    }    
 }
-
-public synchronized void produit() {
-        boolean ok = false;
-        while (!ok) {
-
-            synchronized (this) {
-                if (this.dispo < MAXR) {
-                    this.dispo = this.dispo + 1;
-                    ok = true;
-                    this.notifyAll();
-                } 
-                else {
-                    this.wait();
-                }
-            }
-        }
-    }
-
-    public synchronized void consomme() {
-        boolean ok = false;
-        while (!ok) {
-
-            synchronized (this) {
-                if (this.dispo > 0) {
-                    this.dispo = this.dispo - 1;
-                    ok = true;
-                    this.notifyAll();
-                } 
-                else {
-                    this.wait();
-                    }
-                }
-            }
-        }
-    }

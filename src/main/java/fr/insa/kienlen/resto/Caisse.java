@@ -11,8 +11,4 @@ public class Caisse {
     public int getId(){
         return this.id;
     }
-
-    public static void main(String[] args) {
-
-    }
 }

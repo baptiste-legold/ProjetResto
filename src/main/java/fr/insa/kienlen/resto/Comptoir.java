@@ -35,7 +35,7 @@ public class Comptoir {
         }
     }
 
-    public synchronized void libereCaisse(Caisse caisseALiberer){
+    public void libereCaisse(Caisse caisseALiberer){
         this.caissesDispos[caisseALiberer.getId()] = true;
     }    
     

@@ -126,7 +126,7 @@ public class ParametresSimulation {
     public static String formatFLMArray(FonctionLineaireParMorceaux[] fs) {
         StringBuilder res = new StringBuilder();
         res.append("{\n");
-        for (var f : fs) {
+        for (FonctionLineaireParMorceaux f : fs) {
             res.append("  ");
             res.append(f);
         }

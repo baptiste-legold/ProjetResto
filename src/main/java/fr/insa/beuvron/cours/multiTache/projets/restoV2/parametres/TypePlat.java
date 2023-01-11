@@ -19,7 +19,6 @@ along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
 package fr.insa.beuvron.cours.multiTache.projets.restoV2.parametres;
 
 import fr.insa.beuvron.cours.multiTache.projets.restoV2.fourni.Utils;
-import java.util.Arrays;
 
 /**
  * Un type de Plat. null {@code défini par :
