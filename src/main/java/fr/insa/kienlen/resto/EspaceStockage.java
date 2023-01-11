@@ -18,8 +18,8 @@ public class EspaceStockage
         return ressourcesDispos;
     }
 
-    public void setRessourcesDispos(Ressources[][] ressourcesDispos) {
-        this.ressourcesDispos = ressourcesDispos;
+    public void setRessourcesDispos(Ressources resProduite, int index, int numPlat) {
+        this.ressourcesDispos[index][numPlat] = resProduite;
     }
 
     public int[] getStocksActuels() {

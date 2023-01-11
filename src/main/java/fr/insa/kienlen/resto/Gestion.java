@@ -18,10 +18,53 @@ along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.insa.kienlen.resto;
 
+import fr.insa.beuvron.cours.multiTache.projets.restoV2.parametres.TypePlat;
+
 /**
  *
  * @author blegold01
  */
 public class Gestion {
     
+    private int[] ventes;
+    private int[] produits;
+
+    public Gestion() {
+
+    }
+
+    public int calculBenefice(){
+        int benefice = 0;
+        TypePlat plat = new TypePlat();
+        for(int i = 0; i < 3; i++){
+            switch(i){
+                case 1:
+                    plat = TypePlat.burger();
+                    break;
+                case 2:
+                    plat = TypePlat.frites();
+                    break;
+                case 3:
+                    plat = TypePlat.salade();
+            }
+            benefice += this.ventes[i] * plat.getPrixVente() - this.produits[i] * plat.getCoutPreparation();
+        }
+        return benefice;
+    }
+
+    public int[] getVentes() {
+        return ventes;
+    }
+
+    public void setVentes(int ventes, int numPlat) {
+        this.ventes[numPlat] = ventes;
+    }
+
+    public int[] getProduits() {
+        return produits;
+    }
+
+    public void setProduits(int produits, int numPlat) {
+        this.produits[numPlat] = produits;
+    }
 }

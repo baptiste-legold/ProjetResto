@@ -31,6 +31,7 @@ public class MyResto extends SimuResto {
     private Comptoir leComptoir;
     private EspaceStockage leStock;
     private Ressources[] lesRessources; 
+    private Restaurant infosResto;
 
     public Ressources[] getLesRessources() {
         return lesRessources;
@@ -45,6 +46,10 @@ public class MyResto extends SimuResto {
      */
     public Comptoir getLeComptoir() {
         return leComptoir;
+    }
+
+    public Restaurant getInfoResto(){
+        return infosResto;
     }
 
     @Override
