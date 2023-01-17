@@ -117,6 +117,10 @@ public class GestionnaireTemps {
     public long getTempsOrdiDebut() {
         return this.tempsOrdiDebut.orElseThrow();
     }
+
+    public long getMultiplicateur(){
+        return this.multiplicateur;
+    }
     
     
 }

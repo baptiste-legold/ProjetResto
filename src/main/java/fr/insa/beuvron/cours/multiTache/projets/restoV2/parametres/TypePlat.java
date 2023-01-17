@@ -175,4 +175,22 @@ public class TypePlat {
         return tempsMaxConservation;
     }
 
+    public static TypePlat getTypePlat(int numPlat){
+        TypePlat plat;
+        switch(numPlat){
+            case 1:
+                plat = TypePlat.burger();
+                break;
+            case 2:
+                plat = TypePlat.frites();
+                break;
+            case 3:
+                plat = TypePlat.salade();
+                break;
+            default:
+                plat = TypePlat.burger();
+                break;
+        }
+        return plat;
+    }
 }

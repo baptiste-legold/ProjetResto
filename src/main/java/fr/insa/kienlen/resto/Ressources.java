@@ -25,9 +25,10 @@ public class Ressources {
     private long debutPreparation; 
     private long finConso;
     
-    public Ressources(TypePlat plat, long debutPreparation) {
+    public Ressources(TypePlat plat, long debutPreparation, int productionSimultanee) {
         this.plat = plat;
         this.debutPreparation = debutPreparation;
+        this.finConso = debutPreparation + plat.getDureesPreparation()[productionSimultanee - 1] + plat.getTempsMaxConservation();
     }
 
     public TypePlat getPlat() {
@@ -40,5 +41,10 @@ public class Ressources {
 
     public long getFinConso() {
         return finConso;
-    }    
+    }  
+    
+    @Override
+    public String toString(){
+        return "Plat : " + plat.getNom() + "\nDébut préparation : " + debutPreparation + "\nFin consommation : " + finConso;
+    }
 }

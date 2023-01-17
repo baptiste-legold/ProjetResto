@@ -18,6 +18,10 @@ public class Comptoir {
         return this.lesCaisses;
     }
 
+    public boolean[] getCaissesDispos(){
+        return this.caissesDispos;
+    }
+
     public synchronized int reserveCaisse(){
         int i = 0;
         while(!caissesDispos[i]){

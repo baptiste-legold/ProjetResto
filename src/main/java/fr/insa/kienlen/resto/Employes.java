@@ -18,14 +18,18 @@ along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.insa.kienlen.resto;
 
+import fr.insa.beuvron.cours.multiTache.projets.restoV2.fourni.ArbitreLogSout;
 // import des différentes classes 
 import fr.insa.beuvron.cours.multiTache.projets.restoV2.fourni.CommandeClient;
+import fr.insa.beuvron.cours.multiTache.projets.restoV2.fourni.GestionnaireFileAttente;
 import fr.insa.beuvron.cours.multiTache.projets.restoV2.fourni.GestionnaireTemps;
 import fr.insa.beuvron.cours.multiTache.projets.restoV2.fourni.SimulateurGlobal;
+import fr.insa.beuvron.cours.multiTache.projets.restoV2.fourni.Utils;
 import fr.insa.beuvron.cours.multiTache.projets.restoV2.parametres.ParametresSimulation;
 import fr.insa.beuvron.cours.multiTache.projets.restoV2.parametres.TypePlat;
 
 import java.util.Optional;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,14 +42,16 @@ public class Employes extends Thread{
     private int identifiant;
     private String prenom;
     private String nom;    
-    private boolean occupe; 
+    private SimulateurGlobal simu; 
+    private Gestion gestion;
     
     // constructeur: donne les caractéristiques de l'objet 
-    public Employes (int identifiant, String prenom, String nom) {
+    public Employes (int identifiant, String prenom, String nom, SimulateurGlobal simu, Gestion gestion) {
         this.identifiant = identifiant;
         this.prenom = prenom;
         this.nom = nom;
-        this.occupe = false;
+        this.simu = simu;
+        this.gestion = gestion;
     }
 
     // fonction d'affichage de l'objet Employé
@@ -58,146 +64,163 @@ public class Employes extends Thread{
     // ici cette fonction spécifie les différentes tâches que peut réaliser l'employé
     @Override
     public void run() {
-        // tant que le restaurant n'est pas fermé, on teste les actions
+        // tant que le restaurant n'est pas fermé, on teste les actions.
         MyResto resto = (MyResto) this.simu.getGestionnaireResto();
+        //int tailleCarte = resto.getSimu().getParasSimu().getResto().getCarte().getLesPlats().length;
+        resto.setLeStock(new EspaceStockage());
         ParametresSimulation paras = this.simu.getParasSimu();
         GestionnaireTemps gestTemps = this.simu.getGestionnaireTemps();
+        long multiplicateur = this.simu.getGestionnaireTemps().getMultiplicateur();
+        int compteurCaisses = 0;
 
-        
-        int nbrTypes = paras.getResto().getCarte().getLesPlats().length;
-        int nombreElements;
-        int curStock;
-        int maxStock; 
-        
-        while(true) {  
-            
-            // prends un commande 
-            int caisseReservee = resto.getLeComptoir().reserveCaisse(); 
-            if (caisseReservee != -1) { // si une caisse est libre
-                Optional<CommandeClient> commande = this.simu.getFileAttente().prendCommande(); // on recupère le fait qu'il y ait ou pas une commande  
-                if (commande.isPresent()) { // si ya un client
-                    CommandeClient vraieCommande = commande.get(); // récupère la vrai commande du client.
+        while(gestTemps.currentTimeResto() - gestTemps.getTempsOrdiDebut() * multiplicateur <  paras.getDureeOuverture()){
+            /*for(int i = 0; i < this.simu.getParasSimu().getResto().getNbrCaisse(); i++){
+                if(resto.getLeComptoir().getCaissesDispos()[i]){
+                    compteurCaisses++;
+                }
+            }
+            if(compteurCaisses >= 1){
+                servir();
+            } else{*/
+                int numPlat = -1;
+                int nbPlacesRestantes = 0;
+                int quantiteAPrduire = 0;
+                int capacites, stocksActuels, commande;
+                while (quantiteAPrduire == 0){                    
+                    numPlat++;
+                    System.out.println("Num plat : " + numPlat);
+                    if(numPlat == 3){
+                        System.out.println("Je sors de la boucle");
+                        break;
+                    }
+                    System.out.println(TypePlat.getTypePlat(numPlat) + " :");
+                    System.out.println(paras.getResto().getStockage().getCapacites().length);
+                    capacites = this.simu.getParasSimu().getResto().getStockage().getCapacites()[0]; 
+                    System.out.println("Capacite de stockage : " + capacites);
+                    stocksActuels = resto.getLeStock().getSpecStock(numPlat);
+                    System.out.println("Stocks actuels : " + stocksActuels);
+                    nbPlacesRestantes = capacites - stocksActuels;
+                    System.out.println("Places restantes : " + nbPlacesRestantes);
 
-                    for (int i=0; i< nbrTypes; i++){// pour les 3 types de plats
-                        nombreElements = vraieCommande.getCommande()[i];// on test la première case du tableau (nb burger)
-                        // on récupère le nombre de burger dans le stock
-                        // tant que il en veut plus que le stock
-                        curStock = resto.getLeStock().getStock(i);
-                        while (curStock < nombreElements){ // si ya pas assez 
-                           this.simu.getGestionnaireTemps().sleepDureeResto(60000); // on attends 
-                           curStock = resto.getLeStock().getStock(i);
-                            if (resto.getLeStock().reserveStock()!= -1){ 
-                                resto.getLeStock().reserveStock(); // on reserve le stock
-                            }
+                    commande = gestion.getCommandesEnCours()[numPlat];
+                    System.out.println("Commande en cours : " + commande);
+                    if(nbPlacesRestantes !=0 && commande != 0){
+                        if(commande > nbPlacesRestantes){
+                            quantiteAPrduire = nbPlacesRestantes;
                         }
-                        resto.getLeStock().setStock(curStock-nombreElements,i);
-                        resto.getLeStock().libereStock();
+                        else{
+                            quantiteAPrduire = commande;
+                        }
+                        System.out.println("Quantité à produire : " + quantiteAPrduire);
+                        break;
+                    }
+                    else{
+                        quantiteAPrduire = 0;
                     }
                 }
-            }
-            // fin de commande 
-            resto.getLeComptoir().libereCaisse(caisseReservee);// on libère la caisse 
-            
-            // on produit 
-            for (int i=0; i< nbrTypes; i++){
-                curStock = resto.getLeStock().getStock(i);
-                maxStock= paras.getResto().getStockage().getCapacites()[i];
-                if (curStock < maxStock){
-                    if (resto.getLeStock().reserveStock()!= -1){ 
-                        resto.getLeStock().reserveStock(); 
-                        resto.getLeStock().setStocksActuels(curStock+1, i);
-                        resto.getLeStock().libereStock();   
-                    }
+                if(quantiteAPrduire != 0){
+                    System.out.println("Production de " + quantiteAPrduire + " " + TypePlat.getTypePlat(numPlat));
+                    produire(TypePlat.getTypePlat(numPlat), quantiteAPrduire);
                 }
-            }
-            // fin d eproduction 
-                
-                // produit 
-             
-//            else if (produit==true){
-            
-//            else if (attendre==true){
-                
-            
-//            else {
-                
-        }       
+            //}
+        }  
+        int benefice = gestion.calculBenefice();     
+        System.out.println("\nProduction de : " + gestion.getProduits()[0] + " burgers," + gestion.getProduits()[1] + " frites et " + gestion.getProduits()[2] + " salades.");
+        System.out.println("Vente de : " + gestion.getVentes()[0] + " burgers," + gestion.getVentes()[1] + " frites et " + gestion.getVentes()[2] + " salades.");
+        System.out.println("Bénéfices : " + benefice);     
     }
+        
 
     public void produire(TypePlat plat, int quantite){
 
         MyResto resto = (MyResto) this.simu.getGestionnaireResto();
-        ParametresSimulation paras = this.simu.getParasSimu();
         GestionnaireTemps gestTemps = this.simu.getGestionnaireTemps();
         Ressources[] resProduites = new Ressources[quantite];
         boolean lockDepot = false;
-        int numPlat, indexResProduites, stocksActuels;
+        int numPlat = 0;
+        int indexResProduites, stocksActuels;
 
+        //System.out.println("Stocks actuels");
+        //resto.getLeStock().toString();
 
+        System.out.println("Production de :");
         for(int i = 0; i < quantite; i++){
-            resProduites[i] =  new Ressources(plat, gestTemps.currentTimeResto());
+            resProduites[i] =  new Ressources(plat, gestTemps.currentTimeResto(), quantite);
+            System.out.println(resProduites[i].toString());
         }
-        Utils.sleepNoInterrupt(plat.getDureesPreparation()[quantite - 1 ]);             //on attend le temps de produire toutes les ressources
+        System.out.println("Attente du temps de production de " + quantite + " " + plat.getNom());
+        Utils.sleepNoInterrupt(plat.getDureesPreparation()[quantite - 1]);             //on attend le temps de produire toutes les ressources
+        System.out.println(plat.getDureesPreparation()[quantite - 1] + " écoulés");
+        gestion.setProduits(quantite, numPlat);
+        gestion.retirePlat(numPlat, quantite);
 
+        System.out.println("Lock de dépot en cours d'obtention");
         lockDepot = resto.getLeStock().reserveDepot();
+        long debutAttente = gestTemps.currentTimeResto();
+        long timeOut = 10;
         while(!lockDepot){
             lockDepot = resto.getLeStock().reserveDepot();
+            if(gestTemps.currentTimeResto() - debutAttente > Utils.minToMs(timeOut) * simu.getGestionnaireTemps().getMultiplicateur()){
+                System.out.println("Temps dépassé, lock de dépot non obtenu");
+                break;
+            }
         } 
-        Utils.sleepNoInterrupt(resto.getInfoResto().getDureeChargement());              //A vérifier  
-
-        if(plat.getNom().equalsIgnoreCase("burger")){
-            numPlat = 1;
-        } else if(plat.getNom().equalsIgnoreCase("frites")){
-            numPlat = 2;
-        } else if(plat.getNom().equalsIgnoreCase("salade")){
-            numPlat = 3;
+        if(lockDepot){
+            System.out.println("Lock de dépot obtenu, début du temp de chargement");
+            Utils.sleepNoInterrupt(resto.getSimu().getParasSimu().getResto().getDureeChargement());              //A vérifier  
+            System.out.println("Fin du temps de chargement");
+            gestion.setProduits(quantite, numPlat);       
+            
+            indexResProduites = 0;
+            stocksActuels = resto.getLeStock().getStocksActuels()[numPlat];
+            for(int i = stocksActuels; i < stocksActuels + quantite; i++){
+                resto.getLeStock().setRessourcesDispos(resProduites[indexResProduites], i, numPlat);
+                indexResProduites += 1;
+            }
+            System.out.println("Nouveau stock");
+            resto.getLeStock().toString();
+            resto.getLeStock().setSpecStock(stocksActuels + quantite, numPlat);
+            resto.getLeStock().libereDepot();
+            System.out.println("Lock de dépôt libéré");
         }
-        
-        indexResProduites = 0;
-        stocksActuels = resto.getLeStock().getStocksActuels()[numPlat];
-        for(int i = stocksActuels; i < stocksActuels + quantite; i++){
-            resto.getLeStock().setRessourcesDispos(resProduites[indexResProduites], i, numPlat);
-            indexResProduites += 1;
-        }
-        resto.getLeStock().setSpecStock(stocksActuels + quantite, numPlat);
-        resto.getLeStock().libereDepot();
     }
 
-    public void servir(){
+    /*public void servir(){
 
         MyResto resto = (MyResto) this.simu.getGestionnaireResto();
         ParametresSimulation paras = this.simu.getParasSimu();
         GestionnaireTemps gestTemps = this.simu.getGestionnaireTemps();  
-        Gestion gestion;      
+        GestionnaireFileAttente file = simu.getFileAttente();    
         int caisseReservee = resto.getLeComptoir().reserveCaisse(); 
         int nbProduits, stocksActuels;
         TypePlat plat;
         Optional<CommandeClient> commande;
         CommandeClient vraieCommande;
+        int numCaisse;
 
-        if (caisseReservee != -1) { // si une caisse est libre
+        while(caisseReservee == -1){
+            caisseReservee = resto.getLeComptoir().reserveCaisse();
+        }
+
+        while (!simu.getFileAttente().fileClosed()) {
+            Optional<CommandeClient> vraieCommande = Optional.empty();
+            while (!simu.getFileAttente().fileClosed() && (vraieCommande = file.prendCommande()).isEmpty()) {
+                file.attendsUnClient(1000);
+            }
             commande = this.simu.getFileAttente().prendCommande(); // on recupère le fait qu'il y ait ou pas une commande  
             if (commande.isPresent()) { // si ya un client
                 vraieCommande = commande.get(); // récupère la vrai commande du client.
-                Utils.sleepNoInterrupt(resto.getInfoResto().getDureeCommande());
+                gestion.ajouteCommande(vraieCommande);
+                Utils.sleepNoInterrupt(resto.getSimu().getParasSimu().getResto().getDureeCommande());
             }
-        }
 
-        while(resto.getLeStock().reserveRetrait()){
-            //on attend de pouvoir accéder à la zone de retrait de l'espace de stockage
+            while(resto.getLeStock().reserveRetrait()){
+                //on attend de pouvoir accéder à la zone de retrait de l'espace de stockage
+            }
         }
 
         for(int i = 0; i < 3; i++){
-            switch(i){
-                case 1:
-                    plat = TypePlat.burger();
-                    break;
-                case 2:
-                    plat = TypePlat.frites();
-                    break;
-                case 3:
-                    plat = TypePlat.salade();
-            }
+            plat = TypePlat.getNumPlat(i);
             nbProduits = vraieCommande.getCommande()[i];
             if(nbProduits != 0){
                 jeter(i);                                                        //Fonction à implémenter
@@ -207,8 +230,8 @@ public class Employes extends Thread{
                 stocksActuels = resto.getLeStock().getStocksActuels()[i];
             }
             resto.getLeStock().setSpecStock(stocksActuels - nbProduits, i);
-            Utils.sleepNoInterrupt(resto.getInfoResto().getDureeDechargement());
-            gestion.setVentes(gestion.getVentes()[i] + nbProduits, i);
+            Utils.sleepNoInterrupt(resto.getSimu().getParasSimu().getResto().getDureeDechargement());
+            gestion.setVentes(nbProduits, i);
         }
         resto.getLeStock().libereRetrait();
     }
@@ -224,20 +247,37 @@ public class Employes extends Thread{
 
         do{
             indexRes++;
-            if(indexRes < resto.getInfoResto().getStockage().getCapacites()[numPlat]){
+            if(indexRes < resto.getSimu().getParasSimu().getResto().getStockage().getCapacites()[numPlat]){
                 resTemp = resto.getLeStock().getRessourcesDispos()[indexRes][numPlat];
                 if(resTemp.getFinConso() < gestTemps.currentTimeResto()){
-                    perime = true;
-                    Utils.sleepNoInterrupt(resto.getInfoResto().getDureeDechargement());                                
+                    perime = true;                               
                 }
                 else{
                     perime = false;
                 }
             }
         } while(perime);
+        Utils.sleepNoInterrupt(resto.getSimu().getParasSimu().getResto().getDureeDechargement()); 
         for(int i = 0; i < indexRes; i++){                                                      //A revoir
             resTemp = resto.getLeStock().getRessourcesDispos()[indexRes + 1][numPlat];
-            resto.getLeStock().setRessourcesDispos(resTemp, indexRes, numPlat);
+            resto.getLeStock().setRessourcesDispos(resTemp, indexRes, numPlat);            
         }
-    }    
+        gestion.ajoutePlat(numPlat, indexRes);
+    } */  
+    
+    public static void main(String[] args) {
+        TypePlat plat = TypePlat.burger();
+        Gestion gestion = new Gestion();
+        ParametresSimulation paras = ParametresSimulation.parasMiniTest();
+        MyResto resto = new MyResto();
+        SimulateurGlobal simu = new SimulateurGlobal(paras,
+                resto,
+                new ArbitreLogSout(-1),
+                200,  // taux d'accélération
+                new Random(123456));
+        simu.start();
+        Employes emp = new Employes(1, "toto", "titi", simu, gestion);
+        gestion.ajoutePlat(0, 2);
+        emp.produire(plat, 2);
+    }
 }

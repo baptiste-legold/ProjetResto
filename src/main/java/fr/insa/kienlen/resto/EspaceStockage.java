@@ -7,9 +7,9 @@ public class EspaceStockage
     private boolean isRetraitLibre;
     private boolean isDepotLibre;
     
-    public EspaceStockage(Ressources[][] ressourcesInitiales, int[] stocksInitiaux) {
-        this.ressourcesDispos = ressourcesInitiales;    
-        this.stocksActuels = stocksInitiaux;
+    public EspaceStockage() {
+        this.ressourcesDispos = new Ressources[255][3];    
+        this.stocksActuels = new int[]{0};
         this.isRetraitLibre = true;
         this.isDepotLibre = true;
     }

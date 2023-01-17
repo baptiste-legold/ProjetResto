@@ -31,7 +31,6 @@ public class MyResto extends SimuResto {
     private Comptoir leComptoir;
     private EspaceStockage leStock;
     private Ressources[] lesRessources; 
-    private Restaurant infosResto;
 
     public Ressources[] getLesRessources() {
         return lesRessources;
@@ -48,14 +47,19 @@ public class MyResto extends SimuResto {
         return leComptoir;
     }
 
-    public Restaurant getInfoResto(){
-        return infosResto;
+    public void setLeStock(EspaceStockage stock){
+        this.leStock = stock;
     }
 
     @Override
     public void start() {
         SimulateurGlobal simu = this.getSimu();
-        Restaurant resto = new Restaurant
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Gestion gestion = new Gestion();
+        //int nbEmployes = this.getSimu().getParasSimu().getResto().getNbrEmployes();
+        int nbEmployes = 1;
+        for(int i = 0; i < nbEmployes; i++){
+            Employes emp = new Employes(1, "toto", "titi", simu, gestion);
+            emp.start();
+        }  
     }    
 }

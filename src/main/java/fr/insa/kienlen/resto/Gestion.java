@@ -18,6 +18,8 @@ along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.insa.kienlen.resto;
 
+import fr.insa.beuvron.cours.multiTache.projets.restoV2.fourni.CommandeClient;
+import fr.insa.beuvron.cours.multiTache.projets.restoV2.parametres.Restaurant;
 import fr.insa.beuvron.cours.multiTache.projets.restoV2.parametres.TypePlat;
 
 /**
@@ -26,12 +28,33 @@ import fr.insa.beuvron.cours.multiTache.projets.restoV2.parametres.TypePlat;
  */
 public class Gestion {
     
-    private int[] ventes;
-    private int[] produits;
+    private int[] ventes = new int[3];
+    private int[] produits = new int[3];
+    private int[] commandesEnCours = new int[3];
 
     public Gestion() {
-
+        for(int i = 0; i < 3; i++){
+            ventes[i] = 0;
+            produits[i] = 0;
+            commandesEnCours[i] = 0;
+        }
     }
+
+    public synchronized void ajouteCommande(CommandeClient commande) {
+        int[] ajout = commande.getCommande();
+        for(int i=0; i < 3; i++){
+            commandesEnCours[i] += ajout[i];
+        }
+    }
+
+    public synchronized void ajoutePlat(int numPlat, int quantite){
+        commandesEnCours[numPlat] += quantite; 
+    }    
+
+
+    public synchronized void retirePlat(int numPlat, int quantite){
+        commandesEnCours[numPlat] -= quantite; 
+    }    
 
     public int calculBenefice(){
         int benefice = 0;
@@ -56,15 +79,23 @@ public class Gestion {
         return ventes;
     }
 
-    public void setVentes(int ventes, int numPlat) {
-        this.ventes[numPlat] = ventes;
+    public void setVentes(int quantiteAjoutee, int numPlat) {
+        this.ventes[numPlat] += quantiteAjoutee;
     }
 
     public int[] getProduits() {
         return produits;
     }
 
-    public void setProduits(int produits, int numPlat) {
-        this.produits[numPlat] = produits;
+    public void setProduits(int quantiteAjoutee, int numPlat) {
+        this.produits[numPlat] += quantiteAjoutee;
+    }
+
+    public int[] getCommandesEnCours(){
+        return this.commandesEnCours;
+    }
+
+    public static void main(String[] args) {
+        
     }
 }
