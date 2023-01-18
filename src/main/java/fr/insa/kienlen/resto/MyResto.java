@@ -20,7 +20,7 @@ package fr.insa.kienlen.resto;
 
 import fr.insa.beuvron.cours.multiTache.projets.restoV2.fourni.SimuResto;
 import fr.insa.beuvron.cours.multiTache.projets.restoV2.fourni.SimulateurGlobal;
-import fr.insa.beuvron.cours.multiTache.projets.restoV2.parametres.Restaurant;
+
 
 /**
  *
@@ -30,14 +30,14 @@ public class MyResto extends SimuResto {
     
     private Comptoir leComptoir;
     private EspaceStockage leStock;
-    private Ressources[] lesRessources; 
-
-    public Ressources[] getLesRessources() {
-        return lesRessources;
-    }
+    private Gestion laGestion;
 
     public EspaceStockage getLeStock() {
         return leStock;
+    }
+
+    public Gestion getLaGestion(){
+        return laGestion;
     }
 
     /**
@@ -53,12 +53,19 @@ public class MyResto extends SimuResto {
 
     @Override
     public void start() {
-        SimulateurGlobal simu = this.getSimu();
-        Gestion gestion = new Gestion();
-        //int nbEmployes = this.getSimu().getParasSimu().getResto().getNbrEmployes();
-        int nbEmployes = 1;
-        for(int i = 0; i < nbEmployes; i++){
-            Employes emp = new Employes(1, "toto", "titi", simu, gestion);
+        SimulateurGlobal simu = this.getSimu();        
+        int nbCaisses = this.getSimu().getParasSimu().getResto().getNbrCaisse();
+        int nbEmployes = this.getSimu().getParasSimu().getResto().getNbrEmployes();
+        Caisse[] lesCaisses = new Caisse[nbCaisses];
+        for(int i=0; i < nbCaisses; i++){
+            lesCaisses[i] = new Caisse(i);
+        }
+        this.leComptoir = new Comptoir(lesCaisses);
+        this.leStock = new EspaceStockage();
+        int[] commandesInitiales = new int[]{2,0,0};
+        this.laGestion = new Gestion(commandesInitiales);
+        for(int i = 0; i <= nbEmployes; i++){
+            Employes emp = new Employes(i, "toto", "titi", simu);
             emp.start();
         }  
     }    

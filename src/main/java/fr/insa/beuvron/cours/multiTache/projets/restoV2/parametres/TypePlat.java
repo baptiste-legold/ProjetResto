@@ -178,13 +178,13 @@ public class TypePlat {
     public static TypePlat getTypePlat(int numPlat){
         TypePlat plat;
         switch(numPlat){
-            case 1:
+            case 0:
                 plat = TypePlat.burger();
                 break;
-            case 2:
+            case 1:
                 plat = TypePlat.frites();
                 break;
-            case 3:
+            case 2:
                 plat = TypePlat.salade();
                 break;
             default:

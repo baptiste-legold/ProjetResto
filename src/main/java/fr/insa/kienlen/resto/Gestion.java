@@ -18,8 +18,7 @@ along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.insa.kienlen.resto;
 
-import fr.insa.beuvron.cours.multiTache.projets.restoV2.fourni.CommandeClient;
-import fr.insa.beuvron.cours.multiTache.projets.restoV2.parametres.Restaurant;
+import java.util.Arrays;
 import fr.insa.beuvron.cours.multiTache.projets.restoV2.parametres.TypePlat;
 
 /**
@@ -32,18 +31,18 @@ public class Gestion {
     private int[] produits = new int[3];
     private int[] commandesEnCours = new int[3];
 
-    public Gestion() {
+    public Gestion(int[] commandesInitiales) {
         for(int i = 0; i < 3; i++){
             ventes[i] = 0;
             produits[i] = 0;
-            commandesEnCours[i] = 0;
+            //commandesEnCours[i] = 0;
         }
+        commandesEnCours = commandesInitiales;
     }
 
-    public synchronized void ajouteCommande(CommandeClient commande) {
-        int[] ajout = commande.getCommande();
-        for(int i=0; i < 3; i++){
-            commandesEnCours[i] += ajout[i];
+    public synchronized void ajouteCommande(int[] commande) {
+        for(int i=0; i < commande.length; i++){
+            commandesEnCours[i] += commande[i];
         }
     }
 
@@ -91,8 +90,13 @@ public class Gestion {
         this.produits[numPlat] += quantiteAjoutee;
     }
 
-    public int[] getCommandesEnCours(){
+    public synchronized int[] getCommandesEnCours(){
         return this.commandesEnCours;
+    }
+
+    @Override
+    public String toString(){
+        return "Commandes en cours : " + Arrays.toString(commandesEnCours);
     }
 
     public static void main(String[] args) {

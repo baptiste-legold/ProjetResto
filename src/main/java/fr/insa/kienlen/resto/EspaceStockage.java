@@ -1,5 +1,7 @@
 package fr.insa.kienlen.resto;
 
+import java.util.Arrays;
+
 public class EspaceStockage
 {
     private Ressources[][] ressourcesDispos;
@@ -9,32 +11,32 @@ public class EspaceStockage
     
     public EspaceStockage() {
         this.ressourcesDispos = new Ressources[255][3];    
-        this.stocksActuels = new int[]{0};
+        this.stocksActuels = new int[]{0,0,0};
         this.isRetraitLibre = true;
         this.isDepotLibre = true;
     }
 
-    public Ressources[][] getRessourcesDispos() {
+    public synchronized Ressources[][] getRessourcesDispos() {
         return ressourcesDispos;
     }
 
-    public void setRessourcesDispos(Ressources resProduite, int index, int numPlat) {
+    public synchronized void setRessourcesDispos(Ressources resProduite, int index, int numPlat) {
         this.ressourcesDispos[index][numPlat] = resProduite;
     }
 
-    public int[] getStocksActuels() {
+    public synchronized int[] getStocksActuels() {
         return stocksActuels;
     }
 
-    public void setStocksActuels(int[] stocksActuels) {
+    public synchronized void setStocksActuels(int[] stocksActuels) {
         this.stocksActuels = stocksActuels;
     }
 
-    public int getSpecStock(int valTypePlat){
+    public synchronized int getSpecStock(int valTypePlat){
         return this.stocksActuels[valTypePlat];
     }
     
-    public void setSpecStock(int quantite, int valTypePlat){
+    public synchronized void setSpecStock(int quantite, int valTypePlat){
         this.stocksActuels[valTypePlat] = quantite;
     }
 
@@ -67,4 +69,10 @@ public class EspaceStockage
     public void libereRetrait(){
         this.isRetraitLibre = true;
     }  
+
+    @Override
+    public String toString(){
+        return "Stocks actuels : " + Arrays.toString(stocksActuels); 
+        //stocksActuels[0] + ", " + stocksActuels[1] + ", " + stocksActuels[2] + "]";
+    }
 }

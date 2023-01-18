@@ -9,12 +9,12 @@ import java.util.Random;
 public class Main {
 
     public static void gogogo() {
-        ParametresSimulation paras = ParametresSimulation.parasMiniTest();
+        ParametresSimulation paras = ParametresSimulation.parasTest();
         MyResto resto = new MyResto();
         SimulateurGlobal simu = new SimulateurGlobal(paras,
                 resto,
                 new ArbitreLogSout(-1),
-                2000,  // taux d'accélération
+                50,  // taux d'accélération
                 new Random(123456));
         simu.start();        
     }

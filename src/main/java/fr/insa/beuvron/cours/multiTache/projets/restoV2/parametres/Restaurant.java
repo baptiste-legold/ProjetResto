@@ -75,13 +75,13 @@ public class Restaurant {
     public static Restaurant restoMiniTest() {
         return new Restaurant(Carte.carteMiniTest(),
                 Stockage.stockageMiniTest(),
-                5, 3, Utils.minToMs(5), Utils.minToMs(2), Utils.minToMs(3));
+                1, 1, Utils.minToMs(5), Utils.minToMs(2), Utils.minToMs(3));
     }
     
     public static Restaurant restoTest() {
         return new Restaurant(Carte.carteTest(),
                 Stockage.stockageTest(),
-                5, 3, Utils.minToMs(5), Utils.minToMs(2), Utils.minToMs(3));
+            3, 2, Utils.minToMs(5), Utils.minToMs(2), Utils.minToMs(3));
     }
     
     public static void main(String[] args) {
