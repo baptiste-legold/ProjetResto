@@ -9,9 +9,12 @@ public class EspaceStockage
     private boolean isRetraitLibre;
     private boolean isDepotLibre;
     
-    public EspaceStockage() {
-        this.ressourcesDispos = new Ressources[255][3];    
-        this.stocksActuels = new int[]{0,0,0};
+    public EspaceStockage(int nbPlats) {
+        this.ressourcesDispos = new Ressources[255][nbPlats];    
+        this.stocksActuels = new int[nbPlats];
+        for(int i = 0; i < nbPlats; i++){
+            stocksActuels[i] = 0;
+        }
         this.isRetraitLibre = true;
         this.isDepotLibre = true;
     }

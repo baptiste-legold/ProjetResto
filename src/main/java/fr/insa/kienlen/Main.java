@@ -14,7 +14,7 @@ public class Main {
         SimulateurGlobal simu = new SimulateurGlobal(paras,
                 resto,
                 new ArbitreLogSout(-1),
-                50,  // taux d'accélération
+                480,  // taux d'accélération
                 new Random(123456));
         simu.start();        
     }

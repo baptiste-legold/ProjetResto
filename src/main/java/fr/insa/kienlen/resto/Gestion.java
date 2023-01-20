@@ -27,17 +27,22 @@ import fr.insa.beuvron.cours.multiTache.projets.restoV2.parametres.TypePlat;
  */
 public class Gestion {
     
-    private int[] ventes = new int[3];
-    private int[] produits = new int[3];
-    private int[] commandesEnCours = new int[3];
+    private int[] ventes;
+    private int[] produits;
+    private int[] commandesEnCours;
 
-    public Gestion(int[] commandesInitiales) {
-        for(int i = 0; i < 3; i++){
-            ventes[i] = 0;
-            produits[i] = 0;
-            //commandesEnCours[i] = 0;
+    public Gestion(int nbPlats) {
+        int[] temp = new int[nbPlats];
+        for(int i = 0; i < nbPlats; i++){
+            temp[i] = 0;            
         }
-        commandesEnCours = commandesInitiales;
+        ventes = temp;
+        produits = temp;
+        commandesEnCours = temp;
+    }
+
+    public synchronized int[] getCommandesEnCours(){
+        return this.commandesEnCours;
     }
 
     public synchronized void ajouteCommande(int[] commande) {
@@ -55,30 +60,11 @@ public class Gestion {
         commandesEnCours[numPlat] -= quantite; 
     }    
 
-    public int calculBenefice(){
-        int benefice = 0;
-        TypePlat plat = new TypePlat();
-        for(int i = 0; i < 3; i++){
-            switch(i){
-                case 1:
-                    plat = TypePlat.burger();
-                    break;
-                case 2:
-                    plat = TypePlat.frites();
-                    break;
-                case 3:
-                    plat = TypePlat.salade();
-            }
-            benefice += this.ventes[i] * plat.getPrixVente() - this.produits[i] * plat.getCoutPreparation();
-        }
-        return benefice;
-    }
-
     public int[] getVentes() {
         return ventes;
     }
 
-    public void setVentes(int quantiteAjoutee, int numPlat) {
+    public synchronized void setVentes(int quantiteAjoutee, int numPlat) {
         this.ventes[numPlat] += quantiteAjoutee;
     }
 
@@ -86,12 +72,8 @@ public class Gestion {
         return produits;
     }
 
-    public void setProduits(int quantiteAjoutee, int numPlat) {
+    public synchronized void setProduits(int quantiteAjoutee, int numPlat) {
         this.produits[numPlat] += quantiteAjoutee;
-    }
-
-    public synchronized int[] getCommandesEnCours(){
-        return this.commandesEnCours;
     }
 
     @Override
@@ -99,7 +81,23 @@ public class Gestion {
         return "Commandes en cours : " + Arrays.toString(commandesEnCours);
     }
 
-    public static void main(String[] args) {
-        
+    public int calculBenefice(){
+        int benefice = 0;
+        TypePlat plat = new TypePlat();
+        for(int i = 0; i < 3; i++){
+            switch(i){
+                case 0:
+                    plat = TypePlat.burger();
+                    break;
+                case 1:
+                    plat = TypePlat.frites();
+                    break;
+                case 2:
+                    plat = TypePlat.salade();
+                    break;
+            }
+            benefice = benefice + this.ventes[i] * plat.getPrixVente() - this.produits[i] * plat.getCoutPreparation();
+        }
+        return benefice;
     }
 }

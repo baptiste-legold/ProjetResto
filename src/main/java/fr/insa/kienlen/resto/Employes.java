@@ -64,75 +64,59 @@ public class Employes extends Thread{
         ParametresSimulation paras = this.simu.getParasSimu();
         GestionnaireTemps gestTemps = this.simu.getGestionnaireTemps();
         int numCaisse;
-        
-        if(this.id == resto.getSimu().getParasSimu().getResto().getNbrEmployes()){
-            System.out.println("Current time resto : " + gestTemps.currentTimeResto());
-            System.out.println("Durée ouverture : " + paras.getDureeOuverture());
 
-            while(gestTemps.currentTimeResto() <  paras.getDureeOuverture()){
-
+        while(gestTemps.currentTimeResto() <  paras.getDureeOuverture()){
+            //System.out.println("Recherche d'une caisse...");         
+            numCaisse = resto.getLeComptoir().reserveCaisse();
+            if(numCaisse != -1){
+                System.out.println("Caisse " + numCaisse +" affectée à l'employé n°" + this.id);
+                servir(numCaisse);
             }
+            else{
+                //System.out.println("Employé " + id + " affecté à la production.");
+                int numPlat = -1;
+                int nbPlacesRestantes = 0;
+                int quantiteAPrduire = 0;
+                int capacites, stocksActuels, commande;
+                //System.out.println(resto.getLaGestion().toString());
+                while (quantiteAPrduire == 0){                    
+                    numPlat++;
+                    if(numPlat == 3){
+                        break;
+                    }
+                    //System.out.println(TypePlat.getTypePlat(numPlat));
+                    //System.out.println(paras.getResto().getStockage().getCapacites().length);
+                    capacites = paras.getResto().getStockage().getCapacites()[numPlat]; 
+                    //System.out.println("Capacite de stockage : " + capacites);
+                    stocksActuels = resto.getLeStock().getSpecStock(numPlat);
+                    //System.out.println("Stocks actuels : " + stocksActuels);
+                    nbPlacesRestantes = capacites - stocksActuels;
+                    //System.out.println("Places restantes : " + nbPlacesRestantes);
 
-            
-            int benefice = resto.getLaGestion().calculBenefice();     
-            System.out.println("\nProduction de : " + resto.getLaGestion().getProduits()[0] + " burgers, " + resto.getLaGestion().getProduits()[1] + " frites et " + resto.getLaGestion().getProduits()[2] + " salades.");
-            System.out.println("Vente de : " + resto.getLaGestion().getVentes()[0] + " burgers, " + resto.getLaGestion().getVentes()[1] + " frites et " + resto.getLaGestion().getVentes()[2] + " salades.");
-            System.out.println("Bénéfices : " + benefice);
-        } 
-        else{
-            while(gestTemps.currentTimeResto() <  paras.getDureeOuverture()){
-                //System.out.println("Recherche d'une caisse...");         
-                numCaisse = resto.getLeComptoir().reserveCaisse();
-                if(numCaisse != -1){
-                    System.out.println("Caisse " + numCaisse +" affectée à l'employé n°" + this.id);
-                    servir(numCaisse);
-                }
-                else{
-                    //System.out.println("Employé " + id + " affecté à la production.");
-                    int numPlat = -1;
-                    int nbPlacesRestantes = 0;
-                    int quantiteAPrduire = 0;
-                    int capacites, stocksActuels, commande;
-                    //System.out.println(resto.getLaGestion().toString());
-                    while (quantiteAPrduire == 0){                    
-                        numPlat++;
-                        if(numPlat == 3){
-                            break;
-                        }
-                        //System.out.println(TypePlat.getTypePlat(numPlat));
-                        //System.out.println(paras.getResto().getStockage().getCapacites().length);
-                        capacites = paras.getResto().getStockage().getCapacites()[numPlat]; 
-                        //System.out.println("Capacite de stockage : " + capacites);
-                        stocksActuels = resto.getLeStock().getSpecStock(numPlat);
-                        //System.out.println("Stocks actuels : " + stocksActuels);
-                        nbPlacesRestantes = capacites - stocksActuels;
-                        //System.out.println("Places restantes : " + nbPlacesRestantes);
-
-                        commande = resto.getLaGestion().getCommandesEnCours()[numPlat];
-                        //System.out.println("Nombre de plats à produire (" + numPlat + "): " + commande);
-                        if(nbPlacesRestantes !=0 && commande != 0){
-                            if(commande > nbPlacesRestantes){
-                                quantiteAPrduire = nbPlacesRestantes;
-                            }
-                            else{
-                                quantiteAPrduire = commande;
-                            }
-                            //System.out.println("Quantité à produire (" + numPlat + "): " + quantiteAPrduire);
-                            break;
+                    commande = resto.getLaGestion().getCommandesEnCours()[numPlat];
+                    //System.out.println("Nombre de plats à produire (" + numPlat + "): " + commande);
+                    if(nbPlacesRestantes !=0 && commande != 0){
+                        if(commande > nbPlacesRestantes){
+                            quantiteAPrduire = nbPlacesRestantes;
                         }
                         else{
-                            quantiteAPrduire = 0;
+                            quantiteAPrduire = commande;
                         }
+                        //System.out.println("Quantité à produire (" + numPlat + "): " + quantiteAPrduire);
+                        break;
                     }
-                    if(quantiteAPrduire != 0){
-                        System.out.println("Production de " + quantiteAPrduire + " " + TypePlat.getTypePlat(numPlat).getNom() + " par l'employé " + id);
-                        resto.getLaGestion().retirePlat(numPlat, quantiteAPrduire);
-                        produire(numPlat, quantiteAPrduire);
+                    else{
+                        quantiteAPrduire = 0;
                     }
+                }
+                if(quantiteAPrduire != 0){
+                    System.out.println("Production de " + quantiteAPrduire + " " + TypePlat.getTypePlat(numPlat).getNom() + " par l'employé " + id);
+                    resto.getLaGestion().retirePlat(numPlat, quantiteAPrduire);
+                    produire(numPlat, quantiteAPrduire);
                 }
             }
         }
-    }        
+    }       
 
     public void produire(int numPlat, int quantite){
 
@@ -236,11 +220,11 @@ public class Employes extends Thread{
             for(int numPlat = 0; numPlat < 3; numPlat++){
                 nbProduits = vraieCommande[numPlat];
                 if(nbProduits != 0){                  
-                    if(resto.getLeStock().getStocksActuels()[numPlat] != 0){
+                    /*if(resto.getLeStock().getStocksActuels()[numPlat] != 0){
                         //System.out.println("Employé " + id + " commence à jeter le plat " + numPlat);
                         jeter(numPlat);
                         //System.out.println("Employé " + id + " a terminé de jeter le plat " + numPlat);                                         
-                    }                   
+                    }*/                   
                     while(resto.getLeStock().getStocksActuels()[numPlat] < nbProduits){
                         //System.out.println("Employé " + id + " attend un ou plusieurs plats " + numPlat); 
                         Utils.sleepNoInterrupt(gestTemps.dureeRestoVersDureeOrdi(30000));         // on réessaye toutes les 30s en durée resto avant d'avoir 
@@ -269,21 +253,19 @@ public class Employes extends Thread{
         GestionnaireTemps gestTemps = this.simu.getGestionnaireTemps();
         Ressources resTemp;  
         boolean perime = false;
-        int indexRes = -1;        
+        int indexRes = 0;        
 
-        do{
-            indexRes++;
-            if(indexRes < resto.getLeStock().getStocksActuels()[numPlat]){
-                resTemp = resto.getLeStock().getRessourcesDispos()[indexRes][numPlat];
-                if(resTemp.getFinConso() < gestTemps.currentTimeResto()){
-                    resto.getLeStock().setSpecStock(resto.getLeStock().getSpecStock(numPlat) - 1, numPlat);
-                    perime = true;                               
-                }
-                else{
-                    perime = false;
-                }
+        while(perime && indexRes < resto.getLeStock().getStocksActuels()[numPlat]){
+            resTemp = resto.getLeStock().getRessourcesDispos()[indexRes][numPlat];
+            if(resTemp.getFinConso() < gestTemps.currentTimeResto()){
+                resto.getLeStock().setSpecStock(resto.getLeStock().getSpecStock(numPlat) - 1, numPlat);
+                perime = true; 
+                indexRes++;                              
             }
-        } while(perime);
+            else{
+                perime = false;
+            }            
+        }
         System.out.println("Nombre de ressources " + numPlat + " à jeter : " + indexRes);
         System.out.println("Stocks avant de jeter :");
         System.out.println(resto.getLeStock().toString());

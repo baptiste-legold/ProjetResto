@@ -81,7 +81,7 @@ public class Restaurant {
     public static Restaurant restoTest() {
         return new Restaurant(Carte.carteTest(),
                 Stockage.stockageTest(),
-            3, 2, Utils.minToMs(5), Utils.minToMs(2), Utils.minToMs(3));
+            2, 1, Utils.minToMs(5), Utils.minToMs(2), Utils.minToMs(3));
     }
     
     public static void main(String[] args) {
