@@ -224,7 +224,7 @@ public class Employes extends Thread{
                         //System.out.println("Employé " + id + " commence à jeter le plat " + numPlat);
                         jeter(numPlat);
                         //System.out.println("Employé " + id + " a terminé de jeter le plat " + numPlat);                                         
-                    }*/                   
+                    }*/                  
                     while(resto.getLeStock().getStocksActuels()[numPlat] < nbProduits){
                         //System.out.println("Employé " + id + " attend un ou plusieurs plats " + numPlat); 
                         Utils.sleepNoInterrupt(gestTemps.dureeRestoVersDureeOrdi(30000));         // on réessaye toutes les 30s en durée resto avant d'avoir 
@@ -252,7 +252,7 @@ public class Employes extends Thread{
         MyResto resto = (MyResto) this.simu.getGestionnaireResto();
         GestionnaireTemps gestTemps = this.simu.getGestionnaireTemps();
         Ressources resTemp;  
-        boolean perime = false;
+        boolean perime = true;
         int indexRes = 0;        
 
         while(perime && indexRes < resto.getLeStock().getStocksActuels()[numPlat]){
